@@ -9,10 +9,9 @@ matrix_multiply:
 
 	.frame	$fp,40,ra			# Definimos el Stack Frame de 40
 	subu	sp,sp,40
-	.cprestore 16
-	sw	ra,36(sp)
-	sw	$fp,32(sp)
-	sw	gp,28(sp)
+	.cprestore 24
+	sw	ra,32(sp)
+	sw	$fp,28(sp)
 	move	$fp,sp				# Definido ya el stack frame, se escribe la funcion:
 
 	sw	a0,40($fp)				#Se guarda los argumentos en el ABA de la Caller
@@ -38,15 +37,15 @@ matrix_multiply:
 					
 $PRIMERFOR:
 	sltu	t4,t0,t3 			#En t4 esta el resultado de la comparacion.
-	beq t4,$0,$SALIRPRIMERFOR 	#Condicion de corte del for exterior.
+	beq t4,zero,$SALIR 			#Condicion de corte del for exterior.
 	li 	t1,0					#Inicializo el indice j en 0 en t1.
 
 $SEGUNDOFOR:
 	sltu	t4,t1,t3
-	beq t4,$0,$SALIRSEGUNDOFOR 	# Condicion de corte del for del medio.
+	beq t4,zero,$SALIRSEGUNDOFOR 	# Condicion de corte del for del medio.
 
-	sw $0,16($fp)				#Esto es solo para inicializar un double en 0.
-	sw $0,20($fp)
+	sw zero,16($fp)				#Esto es solo para inicializar un double en 0.
+	sw zero,20($fp)
 
 	l.d	$f0,16($fp)				#Cargo un double en 0 en f0 y f1.						
 	
@@ -55,7 +54,7 @@ $SEGUNDOFOR:
 $TERCERFOR:
 
 	sltu	t4,t2,t3
-	beq t4,$0,$SALIRTERCERFOR 	# Condicion de corte del for interior.
+	beq t4,zero,$SALIRTERCERFOR 	# Condicion de corte del for interior.
 
 	mult	t0,t3 				#Hago el producto i*n
 	mflo	t4					#Guardo el resultado de la multiplicacion en t4
@@ -102,21 +101,18 @@ $SALIRSEGUNDOFOR:
 	addu	t0,t0,1
 	b	$PRIMERFOR				#Ejecucion del loop (for exterior).
 
-$SALIRPRIMERFOR:
-	b 	$SALIR 					# Una vez que finalizamos todos los ciclos, salimos
-
-
 $SALIRCONERROR: 				# Retorna el valor 0 (NULL) y emite mensaje de error por stderr.
 	la	a0,__sF+176
 	la 	a1,$STRINGERROR
 	la	t9,fprintf
 	jal	ra,t9
+	move t7, zero
 
 $SALIR:							# Finaliza la ejecucion
 	move	v0,t7 				# Copio el puntero a m a v0.
 	move	sp,$fp
-	lw	ra,36(sp)
-	lw	$fp,32(sp)
+	lw	ra,32(sp)
+	lw	$fp,28(sp)
 	addu	sp,sp,40
 	jr	ra
 	.end	matrix_multiply
