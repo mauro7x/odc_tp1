@@ -1,2 +1,6 @@
-# odc_tp1
-TP1 Organización de Computadoras
+# Organización de Computadoras
+### Trabajo Práctico 1: Programación MIPS
+
+### Links
+- Link al informe: https://es.overleaf.com/read/jwygbdpqjqsm
+- Link para editar informe: https://es.overleaf.com/4153233649mtrtpzwpdjkp
