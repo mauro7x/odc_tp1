@@ -1,2 +1,6 @@
-# odc_tp1
-TP1 Organización de Computadoras
+# Organización de Computadoras
+### Trabajo Práctico 1: 
+
+### Links
+- Link al informe: 
+- Link para editar informe: 
