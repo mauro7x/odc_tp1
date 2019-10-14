@@ -1,5 +1,5 @@
-#ifndef TP0_H_
-#define TP0_H_
+#ifndef TP1_H_
+#define TP1_H_
 
 #include <stdio.h>
 
@@ -28,4 +28,4 @@ int fill_matrix(matrix_t* m1, matrix_t* m2);
 // Lee de la entrada estandar la dimension de la matriz.
 int obtener_dimension();
 
-#endif /* TP0_H_ */
+#endif /* TP1_H_ */

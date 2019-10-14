@@ -2,18 +2,18 @@ CC = gcc
 CFLAGS = -g -std=c99 -Werror 
 VFLAGS = --leak-check=full --track-origins=yes --show-reachable=yes
 
-CFILES = tp0.c main.c matrix_multiply.c
-HFILES = tp0.h
-EXEC_S = tp0
-DATOS = pruebas.txt
+CCOMPILATION = tp1.c main.c matrix_multiply.c
+SCOMPILATION = tp1.c main.c matrix_multiply.S
+HFILES = tp1.h
+EXEC_S = tp1
 PRUEBAS = pruebas.sh
 TEST_DIR = casos_de_prueba
 
-build: $(CFILES)
-	$(CC) $(CFLAGS) -o $(EXEC_S) $(CFILES)
+build: $(SCOMPILATION)
+	$(CC) $(CFLAGS) -o $(EXEC_S) $(SCOMPILATION)
 
-run: build
-	./$(EXEC_S) < $(DATOS)
+buildc: $(CCOMPILATION)
+	$(CC) $(CFLAGS) -o $(EXEC_S) $(CCOMPILATION)
 
 valgrind: build
 	valgrind $(VFLAGS) ./$(EXEC_S)

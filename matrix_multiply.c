@@ -1,4 +1,4 @@
-#include "tp0.h"
+#include "tp1.h"
 
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	if ((m1->cols) != (m2->rows)) {

@@ -1,4 +1,4 @@
-#include "tp0.h"
+#include "tp1.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #define VERSION "-V"
 #define VERSION_COMPLETE "--version"
 
-#define MODO_DE_USO "Usage:\n \t tp0 -h \n \t tp0 -V \n \t tp0 < in_file > out_file \nOptions: \n \t -V, --version \t Print version and quit.\n \t -h, --help \t Print this information and quit. \nExamples: \n \t tp0 < in.txt > out.txt \n \t cat in.txt | tp0 > out.txt\n"
+#define MODO_DE_USO "Usage:\n \t tp1 -h \n \t tp1 -V \n \t tp1 < in_file > out_file \nOptions: \n \t -V, --version \t Print version and quit.\n \t -h, --help \t Print this information and quit. \nExamples: \n \t tp0 < in.txt > out.txt \n \t cat in.txt | tp0 > out.txt\n"
 
 int validar_argumentos(int argc, char ** argv) {
 
