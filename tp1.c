@@ -51,10 +51,11 @@ int print_matrix(FILE* fp, matrix_t* m) {
 
 		double n = m->array[i];
 
-		if (n != (int) n)
+		fprintf(fp, " %lg", n);
+		/*if (n != (int) n)
 			fprintf(fp, " %.2lg", n);
 		else
-			fprintf(fp, " %d", (int) n);
+			fprintf(fp, " %d", (int) n);*/
 	}
 	fprintf(fp, "\n");
 
