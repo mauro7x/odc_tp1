@@ -3,7 +3,7 @@ CFLAGS = -g -std=c99 -Werror
 VFLAGS = --leak-check=full --track-origins=yes --show-reachable=yes
 
 CCOMPILATION = tp1.c main.c matrix_multiply.c
-SCOMPILATION = tp1.c main.c matrix_multiply.S
+SCOMPILATION = tp1.c main.c matrix_multiply.S mymalloc.S
 HFILES = tp1.h
 EXEC_S = tp1
 PRUEBAS = pruebas.sh

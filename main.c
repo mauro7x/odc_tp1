@@ -1,10 +1,11 @@
 #include "tp1.h"
+#include "mymalloc.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#define VERSION_NUMBER 1.0
+#define VERSION_NUMBER 2.0
 
 #define HELP "-h"
 #define HELP_COMPLETE "--help"
@@ -78,7 +79,6 @@ int main(int argc, char *argv[]) {
 		if (m1 && m2) {
 
 			if (fill_matrix(m1, m2) == EXIT_SUCCESS) {
-
 				m3 = matrix_multiply(m1, m2);
 
 				destroy_matrix(m1);
@@ -86,7 +86,10 @@ int main(int argc, char *argv[]) {
 
 				if (m3) {
 					print_matrix(stdout, m3);
-					destroy_matrix(m3);
+					if (m3->array != NULL)
+						myfree(m3->array);
+					myfree(m3);
+					m3 = NULL;
 				} else {
 					return EXIT_FAILURE;
 				}

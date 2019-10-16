@@ -17,26 +17,30 @@ matrix_multiply:
 	sw	a0,40($fp)				# Se guarda los argumentos en el ABA de la Caller
 	sw	a1,44($fp)
 
-	lw	t0,0(a0)				# m1->rows en t0
 
 	li a0,12 					# 12 es el tamanio necesario para almacenar el puntero al struct.
-	la t9,malloc  				# Llamo a malloc
+	la t9,mymalloc  			# Llamo a mymalloc
 	jal ra, t9
 	beq v0, zero, return_null 	# Devuelvo null si es 0
-	move t7, v0 				# Si no es cero, guardo el puntero a la matriz en t7
+	sw v0, 16($fp) 				# Guardo el puntero a m3 en LTA
+	lw s0, 16($fp)
+	
+	lw s1, 40($fp) 				# puntero a m1 en s1
+	lw s1, 0(s1) 				# cargo el numero de filas
 
-	sw t0, 0(t7) 				# Almaceno el valor de las filas
-	sw t0, 4(t7)				# Almaceno el valor de las columnas
+	sw s1, 0(s0) 				# Almaceno el valor de las filas
+	sw s1, 4(s0)				# Almaceno el valor de las columnas
 
-	mult	t0,t0 				# Hago el producto para ver cuantas celdas necesito reservar
-	mflo	t0					# Guardo el resultado en a0 para pasarlo por parametro a malloc
-	li 	t1, 8
-	mult 	t0, t1 				# Guardo el tamanio necesario (8 porque son doubles)
-	mflo 	a0
-	la t9,malloc  				# Llamo a malloc
+	mult	s1,s1 				# Hago el producto para ver cuantas celdas necesito reservar
+	mflo	s1					# Guardo el resultado en a0 para pasarlo por parametro a malloc
+	sll 	a0,s1,3
+	la t9,mymalloc  			# Llamo a mymalloc
 	jal ra,t9
 	beq v0, zero, return 		# Devuelvo null si es 0
-	sw v0, 8(t7) 				# Si no es cero, guardo el puntero al array en la posicion en memoria destinada al array de mi matriz
+	lw s0, 16($fp)
+	sw v0, 8(s0) 				# Guardo el puntero al array en la posicion en memoria destinada al array de mi matriz
+
+	move 	t7, s0 				# Puntero a la matriz en t7
 
 	lw	a0,40($fp)				# Cargo de vuelta los punteros a m1 y m2
 	lw	a1,44($fp)
@@ -53,6 +57,7 @@ segundo_for:
 	sltu	t4,t1,t3
 	beq t4,zero,salir_segundo_for 	# Condicion de corte del for del medio.
 
+	sw zero,16($fp)
 	sw zero,20($fp)
 
 	l.d	$f0,16($fp)				#Cargo un double en 0 en f0 y f1.						
