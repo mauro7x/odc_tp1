@@ -14,47 +14,55 @@ matrix_multiply:
 	sw	$fp,28(sp)
 	move	$fp,sp				# Definido ya el stack frame, se escribe la funcion:
 
-	sw	a0,40($fp)				#Se guarda los argumentos en el ABA de la Caller
+	sw	a0,40($fp)				# Se guarda los argumentos en el ABA de la Caller
 	sw	a1,44($fp)
 
-	lw	t0,4(a0)				# m1->cols en t0
-	lw 	t1,0(a1)				# m2->rows en t1
+	lw	t0,0(a0)				# m1->rows en t0
 
-	bne	t0,t1,$SALIRCONERROR	# Si m1->cols != de m2->rows, sale. Si no, continua la ejecucion.
+	li a0,12 					# 12 es el tamanio necesario para almacenar el puntero al struct.
+	la t9,malloc  				# Llamo a malloc
+	jal ra, t9
+	beq v0, zero, return_null 	# Devuelvo null si es 0
+	move t7, v0 				# Si no es cero, guardo el puntero a la matriz en t7
 
-	move	a0,t0				#Se guarda m1->cols en a0 y a1 para pasarselos de argumento a create_matrix
-	move	a1,t0				
-	la	t9,create_matrix
-	jal	ra,t9					#En v0 esta el puntero a la matriz nueva m
-	
-	move t7,v0 					#Puntero a la matriz m en t7.
+	sw t0, 0(t7) 				# Almaceno el valor de las filas
+	sw t0, 4(t7)				# Almaceno el valor de las columnas
 
-	lw	a0,40($fp)				#Cargo de vuelta los punteros a m1 y m2
+	mult	t0,t0 				# Hago el producto para ver cuantas celdas necesito reservar
+	mflo	t0					# Guardo el resultado en a0 para pasarlo por parametro a malloc
+	li 	t1, 8
+	mult 	t0, t1 				# Guardo el tamanio necesario (8 porque son doubles)
+	mflo 	a0
+	la t9,malloc  				# Llamo a malloc
+	jal ra,t9
+	beq v0, zero, return 		# Devuelvo null si es 0
+	sw v0, 8(t7) 				# Si no es cero, guardo el puntero al array en la posicion en memoria destinada al array de mi matriz
+
+	lw	a0,40($fp)				# Cargo de vuelta los punteros a m1 y m2
 	lw	a1,44($fp)
-	lw	t3,4(a0)				#Cargo m1->cols en t3.
+	lw	t3,4(a0)				# Cargo m1->cols en t3.
 
-	li	t0,0					#Inicializo el indice i en 0 en t0.
+	li	t0,0					# Inicializo el indice i en 0 en t0.
 					
-$PRIMERFOR:
-	sltu	t4,t0,t3 			#En t4 esta el resultado de la comparacion.
-	beq t4,zero,$SALIR 			#Condicion de corte del for exterior.
-	li 	t1,0					#Inicializo el indice j en 0 en t1.
+primer_for:
+	sltu	t4,t0,t3 			# En t4 esta el resultado de la comparacion.
+	beq t4,zero,return 			# Condicion de corte del for exterior.
+	li 	t1,0					# Inicializo el indice j en 0 en t1.
 
-$SEGUNDOFOR:
+segundo_for:
 	sltu	t4,t1,t3
-	beq t4,zero,$SALIRSEGUNDOFOR 	# Condicion de corte del for del medio.
+	beq t4,zero,salir_segundo_for 	# Condicion de corte del for del medio.
 
-	sw zero,16($fp)				#Esto es solo para inicializar un double en 0.
 	sw zero,20($fp)
 
 	l.d	$f0,16($fp)				#Cargo un double en 0 en f0 y f1.						
 	
 	li	t2,0					#Inicializo el indice k en 0 en t2.
 
-$TERCERFOR:
+tercer_for:
 
 	sltu	t4,t2,t3
-	beq t4,zero,$SALIRTERCERFOR 	# Condicion de corte del for interior.
+	beq t4,zero,salir_tercer_for 	# Condicion de corte del for interior.
 
 	mult	t0,t3 				#Hago el producto i*n
 	mflo	t4					#Guardo el resultado de la multiplicacion en t4
@@ -80,9 +88,9 @@ $TERCERFOR:
 	add.d $f0,$f0,$f2			#sum += m2->array[k * n + j] * m2->array[k * n + j]
 
 	addu	t2,t2,1
-	b	$TERCERFOR				#Ejecucion del loop (for interior).
+	b	tercer_for				#Ejecucion del loop (for interior).
 
-$SALIRTERCERFOR:
+salir_tercer_for:
 	mult t0,t3 					#i*n
 	mflo t4						#Resultado en t4 
 	addu v0,t4,t1 				#i*n + j en v0. Offset para guardar la suma parcial calculada en el for
@@ -95,28 +103,20 @@ $SALIRTERCERFOR:
 	s.d	$f0,0(t5)				#Guardo la suma en esta posicion.
 
 	addu	t1,t1,1
-	b	$SEGUNDOFOR 			#Ejecucion del loop (for del medio).
+	b	segundo_for 			#Ejecucion del loop (for del medio).
 
-$SALIRSEGUNDOFOR:
+salir_segundo_for:
 	addu	t0,t0,1
-	b	$PRIMERFOR				#Ejecucion del loop (for exterior).
+	b	primer_for				#Ejecucion del loop (for exterior).
 
-$SALIRCONERROR: 				# Retorna el valor 0 (NULL) y emite mensaje de error por stderr.
-	la	a0,__sF+176
-	la 	a1,$STRINGERROR
-	la	t9,fprintf
-	jal	ra,t9
+return_null:
 	move t7, zero
 
-$SALIR:							# Finaliza la ejecucion
-	move	v0,t7 				# Copio el puntero a m a v0.
+return:							# Finaliza la ejecucion
+	move	v0,t7 				# Copio el puntero a m a v0. (O el puntero a null, en caso de que no se haya podido reservar memoria).
 	move	sp,$fp
 	lw	ra,32(sp)
 	lw	$fp,28(sp)
 	addu	sp,sp,40
 	jr	ra
 	.end	matrix_multiply
-
-$STRINGERROR:
-	.ascii	"ERROR: las matrices ingresadas no son multiplicables.\n\000"
-
