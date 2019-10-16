@@ -84,14 +84,16 @@ int obtener_dimension() {
 
 	if (posicion >= TAMANIO_BUFFER) {
 		fprintf(stderr, DATOS_ERRONEOS);
-        return -1;
+        return 0;
     }
 
 	if (sscanf(buffer, "%d", &dimension) == 1)
 		return dimension;
 	else
-		return -1;
-
+        if ((posicion == 0) || (posicion == 1))
+		    return -1;  // se alcanzo el fin de archivo, no es ERROR
+        else
+            return 0;
 
 }
 

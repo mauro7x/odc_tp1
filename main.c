@@ -68,9 +68,11 @@ int main(int argc, char *argv[]) {
 
 		int dimension = obtener_dimension();
 
-		if (dimension <= 0) {
+		if (dimension == 0) {
 		    fprintf(stderr, DIMENSION_NO_VALIDA);
 			return EXIT_FAILURE;
+        } else if (dimension == -1) {
+            return EXIT_SUCCESS;
         }
 
 		m1 = create_matrix(dimension, dimension);
